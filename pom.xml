@@ -12,7 +12,7 @@
 	</parent>
 
 	<groupId>com.example</groupId>
-	<artifactId>Reserv-hotel</artifactId>
+	<artifactId>Application</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Reserv-hotel</name>
 	<description>Hotel Reservation API</description>
