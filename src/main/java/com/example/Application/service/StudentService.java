@@ -10,8 +10,31 @@ public class StudentService {
     private List<Student> students = new ArrayList<>();
 
     public List<Student> addStudents(List<Student> newStudents) {
+        if (newStudents == null) {
+            throw new IllegalArgumentException("La liste des étudiants ne peut pas être null");
+        }
+
+        for (Student student : newStudents) {
+            if (student.getReference() == null || student.getReference().trim().isEmpty()) {
+                throw new IllegalArgumentException("La référence de l'étudiant est requise");
+            }
+            if (student.getFirstName() == null || student.getFirstName().trim().isEmpty()) {
+                throw new IllegalArgumentException("Le prénom de l'étudiant est requis");
+            }
+            if (student.getLastName() == null || student.getLastName().trim().isEmpty()) {
+                throw new IllegalArgumentException("Le nom de l'étudiant est requis");
+            }
+            if (student.getAge() <= 0) {
+                throw new IllegalArgumentException("L'âge de l'étudiant doit être supérieur à 0");
+            }
+        }
+
         students.addAll(newStudents);
-        return students;
+        return new ArrayList<>(students);
+    }
+
+    public List<Student> getAllStudents() {
+        return new ArrayList<>(students);
     }
 
     public String getStudentNamesAsString() {

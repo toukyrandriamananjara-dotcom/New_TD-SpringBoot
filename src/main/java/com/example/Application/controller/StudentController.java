@@ -16,20 +16,49 @@ public class StudentController {
     private StudentService studentService;
 
     @PostMapping("/students")
-    public String addStudents(@RequestBody List<Student> students) {
-            studentService.addStudents(students);
+    public ResponseEntity<List<Student>> addStudents(@RequestBody List<Student> students) {
+        try {
+            List<Student> allStudents = studentService.addStudents(students);
 
-        return studentService.getStudentNamesAsString();
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(allStudents);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
     }
 
     @GetMapping("/students")
-    public ResponseEntity<String> getStudents(@RequestHeader("Accept") String acceptHeader) {
-        if ("text/plain".equals(acceptHeader)) {
-            return ResponseEntity.ok(studentService.getStudentNamesAsString());
-        } else {
+    public ResponseEntity<?> getStudents(@RequestHeader(value = "Accept", required = false) String acceptHeader) {
+        try {
+            if (acceptHeader == null) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body("L'en-tête 'Accept' est requis.");
+            }
+
+            if ("text/plain".equals(acceptHeader)) {
+                return ResponseEntity
+                        .status(HttpStatus.OK)
+                        .body(studentService.getStudentNamesAsString());
+            }
+            else if ("application/json".equals(acceptHeader)) {
+                List<Student> allStudents = studentService.getAllStudents();
+                return ResponseEntity
+                        .status(HttpStatus.OK)
+                        .body(allStudents);
+            }
+            else {
+                return ResponseEntity
+                        .status(HttpStatus.NOT_IMPLEMENTED)
+                        .body("Format non supporté. Les formats acceptés sont: text/plain et application/json");
+            }
+        } catch (Exception e) {
             return ResponseEntity
-                    .status(HttpStatus.NOT_ACCEPTABLE)
-                    .body("Format non supporté.");
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Une erreur interne est survenue lors du traitement de la requête.");
         }
     }
 }
